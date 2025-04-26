@@ -6,10 +6,10 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
 }
 
 // Database connection
-$servername = "localhost"; // Change if necessary
-$username = "root"; // Default XAMPP username
-$password = ""; // Default XAMPP password
-$dbname = 'user_auth'; // Change to your actual database name
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = 'user_auth';
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
@@ -20,7 +20,7 @@ if ($conn->connect_error) {
 $_SESSION['patients'] = [];
 
 // Fetch patient data from the database
-$sql = "SELECT * FROM patients"; // Ensure table name is correct
+$sql = "SELECT * FROM patients";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
@@ -28,6 +28,18 @@ if ($result->num_rows > 0) {
         $_SESSION['patients'][] = $row;
     }
 }
+
+// Fetch appointments data
+$appointments = [];
+if (isset($_SESSION['appointments'])) {
+    $appointments = $_SESSION['appointments'];
+}
+
+// Get today's appointments
+$today = date('Y-m-d');
+$todaysAppointments = array_filter($appointments, function($appt) use ($today) {
+    return $appt['date'] == $today;
+});
 
 // Function to display patients
 function displayPatients($search = null) {
@@ -76,6 +88,49 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Information</title>
     <link rel="stylesheet" type="text/css" href="main_style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <style>
+        .dashboard-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stats-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex: 1;
+        }
+        #calendar {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .today-appointments {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .appointment-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .appointment-item:last-child {
+            border-bottom: none;
+        }
+        .appointment-time {
+            font-weight: bold;
+            color: #3498db;
+        }
+    </style>
     <script>
         function searchPatients() {
             var input = document.getElementById('search');
@@ -87,18 +142,70 @@ $conn->close();
                 li[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
             }
         }
+        
+        $(document).ready(function() {
+            var appointments = <?php echo json_encode($appointments); ?>;
+            var calendarEvents = [];
+            
+            appointments.forEach(function(appointment) {
+                calendarEvents.push({
+                    title: appointment.patient_name + ' - ' + appointment.notes,
+                    start: appointment.date + 'T' + appointment.time,
+                    allDay: false
+                });
+            });
+            
+            $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                defaultView: 'month',
+                events: calendarEvents,
+                eventClick: function(calEvent, jsEvent, view) {
+                    alert('Appointment: ' + calEvent.title + '\nTime: ' + moment(calEvent.start).format('MMMM Do YYYY, h:mm a'));
+                }
+            });
+        });
     </script>
 </head>
 <body>
 <?php include 'navbar.php'; ?>
 
 <div class="container">
-    <div class="dashboard">
-        <h2>Dashboard</h2>
-        <ul>
-            <li>Total Patients: <?php echo count($_SESSION['patients']); ?></li>
-        </ul>
+    <div class="dashboard-container">
+        <div class="stats-card">
+            <h3>Total Patients</h3>
+            <p><?php echo count($_SESSION['patients']); ?></p>
+        </div>
+        <div class="stats-card">
+            <h3>Upcoming Appointments</h3>
+            <p><?php echo count($appointments); ?></p>
+        </div>
     </div>
+
+    <div class="today-appointments">
+        <h3>Today's Appointments (<?php echo date('F j, Y'); ?>)</h3>
+        <?php if (count($todaysAppointments) > 0): ?>
+            <?php foreach ($todaysAppointments as $appt): ?>
+                <div class="appointment-item">
+                    <span class="appointment-time">
+                        <?php echo date('g:i A', strtotime($appt['time'])); ?>
+                    </span>
+                    - <?php echo htmlspecialchars($appt['patient_name']); ?>
+                    <div style="font-size: 0.9em; color: #666;">
+                        <?php echo htmlspecialchars($appt['notes']); ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <p>No appointments scheduled for today.</p>
+        <?php endif; ?>
+    </div>
+    
+    <div id="calendar"></div>
+    
     <?php displayPatients(); ?>
 </div>
 </body>
