@@ -112,17 +112,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <label for="confirm_password">Confirm Password:</label>
         <input type="password" id="confirm_password" name="confirm_password" required>
-
         <label>Account Type:</label>
-        <div class="role-selection">
-            <div class="role-btn" onclick="selectRole('doctor')">
-                Doctor
-            </div>
-            <div class="role-btn" onclick="selectRole('nurse')">
-                Nurse
-            </div>
-        </div>
-        <input type="hidden" id="selected_role" name="role" required>
+<div class="role-selection">
+    <div class="role-btn" onclick="selectRole('doctor')">
+        Doctor
+    </div>
+    <div class="role-btn" onclick="selectRole('nurse')">
+        Nurse
+    </div>
+    <div class="role-btn" onclick="selectRole('admin')">
+        Admin
+    </div>
+</div>
+<input type="hidden" id="selected_role" name="role" required>
+
+        
 
         <input type="submit" value="Register">
     </form>
