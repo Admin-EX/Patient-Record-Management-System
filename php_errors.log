@@ -1,0 +1,12 @@
+[26-Apr-2025 12:33:51 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\IPT Project 2025\Patient_list.php on line 90
+[26-Apr-2025 12:33:51 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function query() on null in C:\xampp\htdocs\IPT Project 2025\Patient_list.php:12
+Stack trace:
+#0 C:\xampp\htdocs\IPT Project 2025\Patient_list.php(90): loadPatientsFromDB(NULL)
+#1 {main}
+  thrown in C:\xampp\htdocs\IPT Project 2025\Patient_list.php on line 12
+[26-Apr-2025 12:33:55 Europe/Berlin] PHP Warning:  Undefined variable $pdo in C:\xampp\htdocs\IPT Project 2025\Patient_list.php on line 90
+[26-Apr-2025 12:33:55 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function query() on null in C:\xampp\htdocs\IPT Project 2025\Patient_list.php:12
+Stack trace:
+#0 C:\xampp\htdocs\IPT Project 2025\Patient_list.php(90): loadPatientsFromDB(NULL)
+#1 {main}
+  thrown in C:\xampp\htdocs\IPT Project 2025\Patient_list.php on line 12

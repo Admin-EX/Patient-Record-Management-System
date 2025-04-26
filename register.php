@@ -1,11 +1,6 @@
 <?php
 session_start();
-
-// Database connection
-$host = 'localhost';
-$dbname = 'user_auth';
-$username = 'root';
-$password = '';
+require_once 'db_connection.php';
 
 try {
     $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
@@ -19,8 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_username = trim($_POST['new_username']);
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
+    $role = $_POST['role'] ?? ''; // 'doctor' or 'nurse'
 
-    if (!empty($new_username) && !empty($new_password) && !empty($confirm_password)) {
+    if (!empty($new_username) && !empty($new_password) && !empty($confirm_password) && !empty($role)) {
         if ($new_password !== $confirm_password) {
             $error = "Passwords do not match!";
         } else {
@@ -34,9 +30,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Hash password before storing
                 $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
 
-                // Insert new user
-                $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
-                $stmt->execute(['username' => $new_username, 'password' => $hashed_password]);
+                // Insert new user with role
+                $stmt = $conn->prepare("INSERT INTO users (username, password, role) VALUES (:username, :password, :role)");
+                $stmt->execute([
+                    'username' => $new_username, 
+                    'password' => $hashed_password,
+                    'role' => $role
+                ]);
 
                 // Redirect to login page
                 header("Location: login.php?success=1");
@@ -55,7 +55,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link rel="stylesheet" type="text/css" href="login_style.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/login_style.css">
+    <style>
+        .role-selection {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+        .role-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .role-btn:hover {
+            border-color: #3498db;
+        }
+        .role-btn.selected {
+            border-color: #3498db;
+            background-color: #3498db;
+            color: white;
+        }
+        .role-input {
+            display: none;
+        }
+    </style>
+    <script>
+        function selectRole(role) {
+            // Update visual selection
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // Update hidden input value
+            document.getElementById('selected_role').value = role;
+        }
+    </script>
 </head>
 <body>
 <div class="container">
@@ -72,6 +112,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <label for="confirm_password">Confirm Password:</label>
         <input type="password" id="confirm_password" name="confirm_password" required>
+
+        <label>Account Type:</label>
+        <div class="role-selection">
+            <div class="role-btn" onclick="selectRole('doctor')">
+                Doctor
+            </div>
+            <div class="role-btn" onclick="selectRole('nurse')">
+                Nurse
+            </div>
+        </div>
+        <input type="hidden" id="selected_role" name="role" required>
 
         <input type="submit" value="Register">
     </form>

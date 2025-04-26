@@ -1,9 +1,13 @@
 <?php
 session_start();
+require_once 'db_connection.php'; // Database configuration file
 
-// Initialize appointments array in session if not exists
-if (!isset($_SESSION['appointments'])) {
-    $_SESSION['appointments'] = [];
+// Initialize database connection
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Database connection failed: " . $e->getMessage());
 }
 
 // Function to convert 24-hour time to 12-hour format
@@ -20,33 +24,57 @@ function formatDate($dateString) {
 
 // Handle adding a new appointment
 if (isset($_POST['add_appointment'])) {
-    $new_appointment = [
-        'patient_name' => $_POST['patient_name'],
-        'phone_number' => $_POST['phone_number'],
-        'time' => $_POST['time'],
-        'date' => $_POST['date'],
-        'notes' => $_POST['notes']
-    ];
-    
-    // Add appointment to session
-    $_SESSION['appointments'][] = $new_appointment;
+    try {
+        $stmt = $pdo->prepare("INSERT INTO appointments (patient_name, phone_number, time, date, notes) 
+                              VALUES (:patient_name, :phone_number, :time, :date, :notes)");
+        
+        $stmt->execute([
+            ':patient_name' => $_POST['patient_name'],
+            ':phone_number' => $_POST['phone_number'],
+            ':time' => $_POST['time'],
+            ':date' => $_POST['date'],
+            ':notes' => $_POST['notes']
+        ]);
+        
+        $_SESSION['success_message'] = "Appointment added successfully!";
+        header("Location: appointments.php");
+        exit();
+    } catch (PDOException $e) {
+        $_SESSION['error_message'] = "Error adding appointment: " . $e->getMessage();
+    }
 }
 
 // Handle deleting an appointment
 if (isset($_GET['delete'])) {
-    $index = $_GET['delete'];
-    unset($_SESSION['appointments'][$index]);
-    // Reindex the array
-    $_SESSION['appointments'] = array_values($_SESSION['appointments']);
+    try {
+        $stmt = $pdo->prepare("DELETE FROM appointments WHERE id = :id");
+        $stmt->execute([':id' => $_GET['delete']]);
+        
+        $_SESSION['success_message'] = "Appointment deleted successfully!";
+        header("Location: appointments.php");
+        exit();
+    } catch (PDOException $e) {
+        $_SESSION['error_message'] = "Error deleting appointment: " . $e->getMessage();
+    }
+}
+
+// Retrieve all appointments from database
+try {
+    $stmt = $pdo->query("SELECT * FROM appointments ORDER BY date, time");
+    $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $appointments = [];
+    $_SESSION['error_message'] = "Error retrieving appointments: " . $e->getMessage();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Appointment Inventory</title>
-    <link rel="stylesheet" type="text/css" href="appointment_modal.css">
-    <link rel="stylesheet" type="text/css" href="main_style.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/appointment_modal.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/main_style.css">
 </head>
 <body>
 <?php include 'navbar.php'; ?>
@@ -56,12 +84,25 @@ if (isset($_GET['delete'])) {
         <h1>Appointment Inventory</h1>
         
         <div class="total-appointments1">
-            Total Appointments: <?php echo count($_SESSION['appointments']); ?>
+            Total Appointments: <?php echo count($appointments); ?>
         </div>
         </div>
+        
+        <!-- Display success/error messages -->
+        <?php if (isset($_SESSION['success_message'])): ?>
+            <div class="alert alert-success">
+                <?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?>
+            </div>
+        <?php endif; ?>
+        
+        <?php if (isset($_SESSION['error_message'])): ?>
+            <div class="alert alert-error">
+                <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
+            </div>
+        <?php endif; ?>
+        
         <div class="search-container">
         <input type="text" id="searchInput" class="search-input" placeholder="Search by patient name..." onkeyup="searchAppointments()">
-
         </div>
 
         <button class="add-btn" onclick="openModal()">Add New Appointment</button>
@@ -120,8 +161,8 @@ if (isset($_GET['delete'])) {
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody id="appointmentsTable">
-                <?php foreach ($_SESSION['appointments'] as $index => $appointment): ?>
+            <tbody>
+                <?php foreach ($appointments as $appointment): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($appointment['patient_name']); ?></td>
                         <td><?php echo htmlspecialchars($appointment['phone_number']); ?></td>
@@ -129,7 +170,7 @@ if (isset($_GET['delete'])) {
                         <td><?php echo htmlspecialchars(formatDate($appointment['date'])); ?></td>
                         <td><?php echo htmlspecialchars($appointment['notes']); ?></td>
                         <td>
-                            <a href="#" class="delete-btn" onclick="showDeleteModal(<?php echo $index; ?>); return false;">
+                            <a href="#" class="delete-btn" onclick="showDeleteModal(<?php echo $appointment['id']; ?>); return false;">
                                 Delete
                             </a>
                         </td>
@@ -140,21 +181,21 @@ if (isset($_GET['delete'])) {
     </div>
 
     <script>
-         // Search functionality
-         function searchAppointments() {
-    const input = document.getElementById('searchInput');
-    const filter = input.value.toUpperCase();
-    const table = document.getElementById('appointmentsTable'); 
-    const rows = table.getElementsByTagName('tr');
+        // Search functionality
+        function searchAppointments() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById('appointmentsTable'); 
+            const rows = table.getElementsByTagName('tr');
 
-    for (let i = 1; i < rows.length; i++) { // Start from index 1 to skip table header
-        const td = rows[i].getElementsByTagName('td')[0]; // First column (Patient Name)
-        if (td) {
-            const txtValue = td.textContent || td.innerText;
-            rows[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? '' : 'none';
+            for (let i = 1; i < rows.length; i++) { // Start from index 1 to skip table header
+                const td = rows[i].getElementsByTagName('td')[0]; // First column (Patient Name)
+                if (td) {
+                    const txtValue = td.textContent || td.innerText;
+                    rows[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? '' : 'none';
+                }
+            }
         }
-    }
-}
 
         let deleteIndex = null;
 
@@ -196,7 +237,6 @@ if (isset($_GET['delete'])) {
                 deleteIndex = null;
             }
         }
-        
     </script>
 </body>
 </html>

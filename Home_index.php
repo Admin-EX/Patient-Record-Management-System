@@ -4,14 +4,10 @@ if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
     header("Location: login.php");
     exit();
 }
+require_once 'db_connection.php'; // Database configuration file
 
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = 'user_auth';
-
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Create connection using the variables from db_config.php
+$conn = new mysqli($host, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Database connection failed: " . $conn->connect_error);
 }
@@ -29,10 +25,15 @@ if ($result->num_rows > 0) {
     }
 }
 
-// Fetch appointments data
+// Fetch appointments data from database
 $appointments = [];
-if (isset($_SESSION['appointments'])) {
-    $appointments = $_SESSION['appointments'];
+$sql = "SELECT * FROM appointments ORDER BY date, time";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $appointments[] = $row;
+    }
 }
 
 // Get today's appointments
@@ -87,7 +88,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Information</title>
-    <link rel="stylesheet" type="text/css" href="main_style.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/main_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>

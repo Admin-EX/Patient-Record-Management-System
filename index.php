@@ -1,11 +1,7 @@
 <?php
-session_start();
 
-// Database connection
-$host = 'localhost';
-$dbname = 'user_auth';
-$username = 'root';
-$password = '';
+session_start();
+require 'db_connection.php';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
@@ -90,7 +86,7 @@ if (isset($_POST['logout'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Information</title>
-    <link rel="stylesheet" type="text/css" href="main_style.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/main_style.css">
 </head>
 <body>
 <!-- NAV -->

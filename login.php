@@ -1,16 +1,10 @@
 <?php
 session_start();
-
-// Database connection
-$host = 'localhost';
-$dbname = 'user_auth';
-$username = 'root'; // Default username for phpMyAdmin
-$password = ''; // Default password for phpMyAdmin
+require 'db_connection.php';
 
 try {
     $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    echo "Connected successfully!"; // Debugging line
 } catch (PDOException $e) {
     die("Database connection failed: " . $e->getMessage());
 }
@@ -27,22 +21,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user && password_verify($submitted_password, $user['password'])) {
-        // If credentials are correct, set session variable to indicate user is authenticated
+        // If credentials are correct, set session variables
         $_SESSION['authenticated'] = true;
         $_SESSION['username'] = $user['username'];
-        // Redirect user to Home_index.php
-        header('Location: Home_index.php');
-        exit(); // Ensure script stops execution after redirect
+        $_SESSION['role'] = $user['role']; // Store user role in session
+        
+        // Redirect based on role
+        if ($user['role'] === 'doctor') {
+            header('Location: Home_index.php');
+        } else {
+            header('Location: home_index.php'); // Note the lowercase for nurse
+        }
+        exit();
     } else {
         // If credentials are incorrect, display an error message
         $error = "Invalid username or password.";
     }
 }
 
-// If the user is already authenticated, redirect to Home_index.php
+// If the user is already authenticated, redirect based on role
 if (isset($_SESSION['authenticated']) && $_SESSION['authenticated']) {
-    header('Location: Home_index.php');
-    exit(); // Ensure script stops execution after redirect
+    if ($_SESSION['role'] === 'doctor') {
+        header('Location: Home_index.php');
+    } else {
+        header('Location: home_index.php');
+    }
+    exit();
 }
 ?>
 
@@ -52,7 +56,7 @@ if (isset($_SESSION['authenticated']) && $_SESSION['authenticated']) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" type="text/css" href="login_style.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/login_style.css">
 </head>
 <body>
 <div class="container">
@@ -69,6 +73,7 @@ if (isset($_SESSION['authenticated']) && $_SESSION['authenticated']) {
 
         <input type="submit" value="Login">
     </form>
+    <p>Don't have an account? <a href="register.php">Register here</a></p>
 </div>
 </body>
 </html>
