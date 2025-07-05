@@ -1,0 +1,196 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+.container {
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-left: 33%; /* Adjust margin to accommodate the sidebar */
+    
+}
+.container ul {
+    word-wrap: break-word; /* Break long words to prevent overflow */
+}
+  /* Styling for the active state */
+  .active {
+    background-color: green;
+  }
+
+  /* Styling for the hover state doon sa delete at edit*/
+  .edit-link:hover {
+    background-color: #28a745; /* Green */
+    color: #000000;
+    font-size: 17px;
+    transition: 160ms;
+}
+
+.delete-link:hover {
+    background-color: #c02424; /* Red */
+    color: #fff;
+    font-size: 17px;
+    transition: 160ms;
+}
+
+  
+  .logo {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 25px;
+    color: white;
+    /* display: flex; enable moto pag may logo na*/
+    align-items: center; /* Align items vertically */
+
+}
+/* remove mo nalang to pag may logo na
+.logo img {
+    width: 40px;
+    height: auto;
+    margin-left: 10px;
+    filter: invert(1);
+}
+remove mo nalang to pag may logo na*/
+h1 {
+    text-align: center;
+
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="number"],
+select,
+textarea,
+input[type="date"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+#diagnosis {
+    width: calc(100% - 5px);
+    min-height: 100px;
+    max-width: calc(100% - 5px);
+    overflow-y: auto; /* Add vertical scroll if content exceeds the height */
+}
+#date {
+    width: calc(30% - 5px);
+}
+input[type="submit"] {
+    width: auto;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #37813b;
+    transition: 150ms;
+    font-size: 13px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+/*doon sa edit at delete*/
+li a {
+    color: #ffffff;
+    text-decoration: none;
+    float: right;
+    margin-left: 10px;
+    border-radius: 5px;
+    width: calc(10% - 5px);
+    text-align: center;
+    border: 1px solid #ccc;
+    background-color: #777;
+}
+
+.dashboard {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+}
+.dashboard h2 {
+    margin-top: 0;
+}
+.dashboard ul {
+    margin-top: 0;
+}
+.sidebar {
+    width: 15%;
+    min-width: 150px; /* Ensure sidebar has a minimum width */
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #333;
+    padding-top: 20px;
+}
+
+.alert {
+    position: fixed; /* Change position to fixed */
+    top: 20px; /* Adjust top position as needed */
+    right: 20px; /* Adjust right position as needed */
+    padding: 20px;
+    background-color: #4CAF50;
+    color: white;
+    opacity: 1;
+    transition: opacity 0.6s; /* 600ms to fade out */
+    border-radius: 5px;
+}
+
+.alert.success {background-color: #4CAF50;} /* Green */
+.alert.info {background-color: #2196F3;} /* Blue */
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.date-bloodtype-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.date-bloodtype-container div {
+    width: 48%; /* Adjust width to fit side by side */
+}
+
+#date, #bloodtype {
+    width: 100%;
+}
