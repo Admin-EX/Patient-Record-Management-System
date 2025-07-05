@@ -1,5 +1,7 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Manila'); // Set timezone to Philippines
+
 if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
     header("Location: ../login.php");
     exit();

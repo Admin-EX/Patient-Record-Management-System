@@ -1,4 +1,3 @@
-
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -7,25 +6,26 @@ body {
 }
 
 .container {
-    max-width: 700px;
+    max-width: 650px;
     margin: 20px auto;
     padding: 20px;
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-left: 33%; /* Adjust margin to accommodate the sidebar */
-    
+    margin-left: 30%; /* Adjust margin to accommodate the sidebar */
 }
+
 .container ul {
     word-wrap: break-word; /* Break long words to prevent overflow */
 }
-  /* Styling for the active state */
-  .active {
-    background-color: green;
-  }
 
-  /* Styling for the hover state doon sa delete at edit*/
-  .edit-link:hover {
+/* Styling for the active state */
+.active {
+    background-color: green;
+}
+
+/* Styling for the hover state doon sa delete at edit*/
+.edit-link:hover {
     background-color: #28a745; /* Green */
     color: #000000;
     font-size: 17px;
@@ -39,28 +39,17 @@ body {
     transition: 160ms;
 }
 
-  
-  .logo {
+.logo {
     font-size: 16px;
     font-weight: bold;
     text-align: center;
     margin-bottom: 25px;
     color: white;
-    /* display: flex; enable moto pag may logo na*/
     align-items: center; /* Align items vertically */
+}
 
-}
-/* remove mo nalang to pag may logo na
-.logo img {
-    width: 40px;
-    height: auto;
-    margin-left: 10px;
-    filter: invert(1);
-}
-remove mo nalang to pag may logo na*/
 h1 {
     text-align: center;
-
 }
 
 form {
@@ -85,15 +74,18 @@ input[type="date"] {
     border-radius: 5px;
     box-sizing: border-box;
 }
+
 #diagnosis {
     width: calc(100% - 5px);
     min-height: 100px;
     max-width: calc(100% - 5px);
-    overflow-y: auto; /* Add vertical scroll if content exceeds the height */
+    overflow-y: auto;
 }
+
 #date {
     width: calc(30% - 5px);
 }
+
 input[type="submit"] {
     width: auto;
     padding: 10px 20px;
@@ -121,7 +113,8 @@ li {
     margin-bottom: 10px;
     padding: 10px;
 }
-/*doon sa edit at delete*/
+
+/* Doon sa edit at delete */
 li a {
     color: #ffffff;
     text-decoration: none;
@@ -140,12 +133,15 @@ li a {
     background-color: #f2f2f2;
     border-radius: 5px;
 }
+
 .dashboard h2 {
     margin-top: 0;
 }
+
 .dashboard ul {
     margin-top: 0;
 }
+
 .sidebar {
     width: 15%;
     min-width: 150px; /* Ensure sidebar has a minimum width */
@@ -157,20 +153,66 @@ li a {
     padding-top: 20px;
 }
 
+.sidebar a {
+    display: block;
+    color: white;
+    padding: 10px 7px;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background-color: #555;
+}
+
+/* Para sa Icon ng side bar */
+.sidebar a img {
+    width: 17px;
+    height: auto;
+    margin-right: 10px;
+    filter: invert(1);
+}
+
+.closebtn:hover {
+    color: black;
+}
+
+.logout-form {
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.logout-form input[type="submit"] {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 35px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logout-form input[type="submit"]:hover {
+    background-color: rgb(90, 40, 40);
+    font-size: 12.5px;
+    transition: 200ms;
+}
+
 .alert {
-    position: fixed; /* Change position to fixed */
-    top: 20px; /* Adjust top position as needed */
-    right: 20px; /* Adjust right position as needed */
+    position: fixed;
+    top: 20px;
+    right: 20px;
     padding: 20px;
     background-color: #4CAF50;
     color: white;
     opacity: 1;
-    transition: opacity 0.6s; /* 600ms to fade out */
+    transition: opacity 0.6s;
     border-radius: 5px;
 }
 
 .alert.success {background-color: #4CAF50;} /* Green */
 .alert.info {background-color: #2196F3;} /* Blue */
+
 .closebtn {
     margin-left: 15px;
     color: white;
@@ -181,6 +223,7 @@ li a {
     cursor: pointer;
     transition: 0.3s;
 }
+
 .date-bloodtype-container {
     display: flex;
     justify-content: space-between;
@@ -188,9 +231,33 @@ li a {
 }
 
 .date-bloodtype-container div {
-    width: 48%; /* Adjust width to fit side by side */
+    width: 48%;
 }
 
 #date, #bloodtype {
     width: 100%;
+}
+
+/* More specific table selector in medicine manager */
+.container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.container th, .container td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.container thead {
+    background-color: #4caf50;
+    color: white;
+}
+
+.container tbody tr:hover {
+    background-color: #f1f1f1;
 }

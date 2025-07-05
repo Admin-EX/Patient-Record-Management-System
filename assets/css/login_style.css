@@ -3,7 +3,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #FFFFFF,#B9F2FF ), url('icons/LogoC.png') left no-repeat;
+    background: linear-gradient(to bottom, #FFFFFF,#B9F2FF ), url('../Icons/LogoC.png') left no-repeat;
     background-size: 45%;
     background-blend-mode: multiply;
     height: 80vh;

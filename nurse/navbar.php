@@ -12,6 +12,14 @@ if (isset($_POST['logout'])) {
     exit();
 }
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="../assets/css/navbar_style.css">
+<link rel="stylesheet" type="text/css" href="../assets/css/main_style.css">
+</head>
+<body>
 
 
 <div class="sidebar">
@@ -20,7 +28,10 @@ if (isset($_POST['logout'])) {
         <img src="../Icons/home.png">Home
         <?php if (basename($_SERVER['PHP_SELF']) == 'Home_index.php') echo '<img src="../Icons/arrowr.png" style="float: right;">'; ?>
     </a>
-    
+    <a href="add_patient.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'add_patient.php' ? 'active' : ''; ?>">
+        <img src="../Icons/user.png">Add Patient
+        <?php if (basename($_SERVER['PHP_SELF']) == 'index.php') echo '<img src="../Icons/arrowr.png" style="float: right;">'; ?>
+    </a>
     <a href="Patient_list.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'Patient_list.php' ? 'active' : ''; ?>">
         <img src="../Icons/people.png">List of Patients
         <?php if (basename($_SERVER['PHP_SELF']) == 'Patient_list.php') echo '<img src="../Icons/arrowr.png" style="float: right;">'; ?>
@@ -40,3 +51,6 @@ if (isset($_POST['logout'])) {
         <p style="text-align: center; color: white; margin-top: 5px; font-size:8px;">Made by Syntax Squabbles</p>
     </form>
 </div>
+
+</body>
+</html>

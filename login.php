@@ -29,8 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Redirect based on role
         if ($user['role'] === 'doctor') {
             header('Location: Home_index.php');
+        } elseif ($user['role'] === 'admin') {
+            header('Location: account_manager.php'); // Redirect admin to account_manager.php
         } else {
-            header('Location: home_index.php'); // Note the lowercase for nurse
+            header('Location: nurse/Home_index.php'); // For other roles (e.g., nurse)
         }
         exit();
     } else {
@@ -43,8 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (isset($_SESSION['authenticated']) && $_SESSION['authenticated']) {
     if ($_SESSION['role'] === 'doctor') {
         header('Location: Home_index.php');
+    } elseif ($_SESSION['role'] === 'admin') {
+        header('Location: account_manager.php'); // Redirect admin to account_manager.php
     } else {
-        header('Location: home_index.php');
+        header('Location: nurse/Home_index.php'); // For other roles
     }
     exit();
 }
@@ -73,7 +77,8 @@ if (isset($_SESSION['authenticated']) && $_SESSION['authenticated']) {
 
         <input type="submit" value="Login">
     </form>
-    <p>Don't have an account? <a href="register.php">Register here</a></p>
+    <p>Don't have an account? <a href="forgot_password.php">Forgot Password?</a></p>
+    
 </div>
 </body>
 </html>

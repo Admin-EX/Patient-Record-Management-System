@@ -1,7 +1,6 @@
 <?php
-
 session_start();
-require 'db_connection.php';
+require '../db_connection.php';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
@@ -12,7 +11,7 @@ try {
 
 // Redirect to login page if the user is not authenticated
 if (!isset($_SESSION['authenticated']) || !$_SESSION['authenticated']) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -29,10 +28,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_submit'])) {
     $cellphone = htmlspecialchars($_POST["cellphone"]);
     $address = htmlspecialchars($_POST["address"]);
     $bloodtype = htmlspecialchars($_POST["bloodtype"]);
-    $diagnosis = htmlspecialchars($_POST["diagnosis"]);
+    $diagnosis = '';  // Always set to empty string
     $date = htmlspecialchars($_POST["date"]);
 
-    if (!empty($name) && !empty($age) && !empty($gender) && !empty($cellphone) && !empty($address) && !empty($diagnosis) && !empty($bloodtype)) {
+    if (!empty($name) && !empty($age) && !empty($gender) && !empty($cellphone) && !empty($address) && !empty($bloodtype)) {
         $_SESSION['patients'][] = [
             'name' => $name,
             'age' => $age,
@@ -49,8 +48,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_submit'])) {
 
         // Save to database
         savePatientsToDB($pdo, $name, $age, $gender, $cellphone, $address, $bloodtype, $diagnosis, $date);
-
-        echo "<div class=\"alert success\"><span class=\"closebtn\" onclick=\"this.parentElement.style.display='none';\">&times;</span>Successfully saved</div>";
+        
+        // Set success notification in session
+        $_SESSION['notification'] = "Patient information saved successfully!";
+        
+        // Redirect to prevent form resubmission
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
     }
 }
 
@@ -75,7 +79,7 @@ function savePatientsToDB($pdo, $name, $age, $gender, $cellphone, $address, $blo
 // Logout functionality
 if (isset($_POST['logout'])) {
     unset($_SESSION['authenticated']);
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 ?>
@@ -94,6 +98,17 @@ if (isset($_POST['logout'])) {
 
 <div class="container">
     <h1>Patient Information Form</h1>
+    
+    <?php if (isset($_SESSION['notification'])): ?>
+        <div class="alert success">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            <?php 
+                echo $_SESSION['notification'];
+                unset($_SESSION['notification']); 
+            ?>
+        </div>
+    <?php endif; ?>
+
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required>
@@ -137,13 +152,13 @@ if (isset($_POST['logout'])) {
 
 
         <label for="diagnosis">Diagnosis:</label>
-        <textarea id="diagnosis" name="diagnosis" required></textarea>
+        <textarea id="diagnosis" name="diagnosis" disabled placeholder="Only doctors can add diagnosis. Please contact a doctor to add a diagnosis."></textarea>
 
         <input type="submit" name="add_submit" value="Submit">
     </form>
 </div>
 
 <!-- Link to external JavaScript file -->
-<script src="Index.js"></script>
+<script src="../Index.js"></script>
 </body>
 </html>
